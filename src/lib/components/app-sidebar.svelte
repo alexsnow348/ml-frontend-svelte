@@ -6,136 +6,31 @@
 	import Command from "lucide-svelte/icons/command";
 	import Frame from "lucide-svelte/icons/frame";
 	import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
-	import Map from "lucide-svelte/icons/map";
-	import Settings2 from "lucide-svelte/icons/settings-2";
-	import SquareTerminal from "lucide-svelte/icons/square-terminal";
+	
+	import ChartNoAxesCombined from 'lucide-svelte/icons/chart-no-axes-combined';
 
+	let logoPath = './logo.png';
 	// This is sample data.
 	const data = {
-		user: {
-			name: "shadcn",
-			email: "m@example.com",
-			avatar: "/avatars/shadcn.jpg",
-		},
 		teams: [
 			{
-				name: "Acme Inc",
-				logo: GalleryVerticalEnd,
-				plan: "Enterprise",
-			},
-			{
-				name: "Acme Corp.",
-				logo: AudioWaveform,
-				plan: "Startup",
-			},
-			{
-				name: "Evil Corp.",
-				logo: Command,
-				plan: "Free",
-			},
+				name: "LPKF Laser & Electronics",
+				logo: logoPath,
+				plan: "Arraylze",
+			}
 		],
 		navMain: [
 			{
-				title: "Playground",
+				title: "Dashboard",
 				url: "#",
-				icon: SquareTerminal,
+				icon: ChartNoAxesCombined,
 				isActive: true,
 				items: [
 					{
-						title: "History",
-						url: "#",
-					},
-					{
-						title: "Starred",
-						url: "#",
-					},
-					{
-						title: "Settings",
+						title: "Well Analysis",
 						url: "#",
 					},
 				],
-			},
-			{
-				title: "Models",
-				url: "#",
-				icon: Bot,
-				items: [
-					{
-						title: "Genesis",
-						url: "#",
-					},
-					{
-						title: "Explorer",
-						url: "#",
-					},
-					{
-						title: "Quantum",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Documentation",
-				url: "#",
-				icon: BookOpen,
-				items: [
-					{
-						title: "Introduction",
-						url: "#",
-					},
-					{
-						title: "Get Started",
-						url: "#",
-					},
-					{
-						title: "Tutorials",
-						url: "#",
-					},
-					{
-						title: "Changelog",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Settings",
-				url: "#",
-				icon: Settings2,
-				items: [
-					{
-						title: "General",
-						url: "#",
-					},
-					{
-						title: "Team",
-						url: "#",
-					},
-					{
-						title: "Billing",
-						url: "#",
-					},
-					{
-						title: "Limits",
-						url: "#",
-					},
-				],
-			},
-		],
-		projects: [
-			{
-				name: "Design Engineering",
-				url: "#",
-				icon: Frame,
-			},
-			{
-				name: "Sales & Marketing",
-				url: "#",
-				icon: ChartPie,
-			},
-			{
-				name: "Travel",
-				url: "#",
-				icon: Map,
 			},
 		],
 	};
@@ -143,8 +38,6 @@
 
 <script lang="ts">
 	import NavMain from "$lib/components/nav-main.svelte";
-	import NavProjects from "$lib/components/nav-projects.svelte";
-	import NavUser from "$lib/components/nav-user.svelte";
 	import TeamSwitcher from "$lib/components/team-switcher.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import type { ComponentProps } from "svelte";
@@ -162,10 +55,6 @@
 	</Sidebar.Header>
 	<Sidebar.Content>
 		<NavMain items={data.navMain} />
-		<NavProjects projects={data.projects} />
 	</Sidebar.Content>
-	<Sidebar.Footer>
-		<NavUser user={data.user} />
-	</Sidebar.Footer>
 	<Sidebar.Rail />
 </Sidebar.Root>
