@@ -2,8 +2,8 @@
 	import { Slider } from 'bits-ui';
 
 	let value = [50];
+  let chartContainer;
 </script>
-
 
 <div class="w-full md:max-w-[280px]">
 	<Slider.Root
@@ -22,3 +22,5 @@
 		{/each}
 	</Slider.Root>
 </div>
+
+<canvas bind:this={chartContainer}></canvas>
