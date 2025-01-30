@@ -34,11 +34,17 @@
 		for (let i = 0; i < runVersion.length; i++) {
 			uniqueRunVersion.push({ value: runVersion[i], label: runVersion[i] });
 		}
-
 	}
-	const triggerExperiment = $derived(experiments.find((experiment) => experiment.experiment_name === experiment_name)?.experiment_name ?? 'Select an Experiment');
-	const triggerRunVersion = $derived(uniqueRunVersion.find((version) => version.value === value)?.label ?? 'Select a Run Version');
-	const triggerRunName = $derived(uniqueRunName.find((name) => name.value === value)?.label ?? 'Select a Run Name');
+	const triggerExperiment = $derived(
+		experiments.find((experiment) => experiment.experiment_name === experiment_name)
+			?.experiment_name ?? 'Select an Experiment'
+	);
+	const triggerRunVersion = $derived(
+		uniqueRunVersion.find((version) => version.value === value)?.label ?? 'Select a Run Version'
+	);
+	const triggerRunName = $derived(
+		uniqueRunName.find((name) => name.value === value)?.label ?? 'Select a Run Name'
+	);
 	const triggerWell = $derived(fruits.find((f) => f.value === value)?.label ?? 'Select a Well');
 </script>
 
@@ -73,7 +79,7 @@
 			/>
 			<span class="sr-only">Toggle theme</span>
 		</Button>
-	
+
 		<div class="grid auto-rows-min gap-4 p-5 pt-0 md:grid-cols-4">
 			<div>
 				<Select.Root type="single" name="selected Experiment" bind:value>
@@ -84,7 +90,9 @@
 						<Select.Group>
 							<Select.GroupHeading>Experiment</Select.GroupHeading>
 							{#each experiments as experiment}
-								<Select.Item value={experiment.experiment_name} label={experiment.experiment_name}>{experiment.experiment_name}</Select.Item>
+								<Select.Item value={experiment.experiment_name} label={experiment.experiment_name}
+									>{experiment.experiment_name}</Select.Item
+								>
 							{/each}
 						</Select.Group>
 					</Select.Content>
@@ -99,7 +107,9 @@
 						<Select.Group>
 							<Select.GroupHeading>Run Version</Select.GroupHeading>
 							{#each uniqueRunVersion as version}
-								<Select.Item value={version.value} label={version.label}>{version.label}</Select.Item>
+								<Select.Item value={version.value} label={version.label}
+									>{version.label}</Select.Item
+								>
 							{/each}
 						</Select.Group>
 					</Select.Content>
