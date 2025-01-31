@@ -9,43 +9,40 @@
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	let { data } = $props();
-	const fruits = [
-		{ value: 'apple', label: 'Apple' },
-		{ value: 'banana', label: 'Banana' },
-		{ value: 'blueberry', label: 'Blueberry' },
-		{ value: 'grapes', label: 'Grapes' },
-		{ value: 'pineapple', label: 'Pineapple' }
-	];
-
-	let value = $state('');
-	let experiment_name = $state('');
+	let { data } = $props();	
 	const experiments = data.dashboardData.experiments_list;
-	// derived unique details from experiments
-	// const uniqueRunName = experiments.map((experiment) => ({
-	const uniqueRunName = [];
-	const uniqueRunVersion = [];
-	for (let i = 0; i < experiments.length; i++) {
-		const runName = experiments[i].uniqueDetail.run_name;
-		for (let i = 0; i < runName.length; i++) {
-			uniqueRunName.push({ value: runName[i], label: runName[i] });
-		}
-		const runVersion = experiments[i].uniqueDetail.run_version;
-		for (let i = 0; i < runVersion.length; i++) {
-			uniqueRunVersion.push({ value: runVersion[i], label: runVersion[i] });
-		}
-	}
+
+	let experimentName = $state("");
 	const triggerExperiment = $derived(
-		experiments.find((experiment) => experiment.experiment_name === experiment_name)
+		experiments.find((experiment) => experiment.experiment_name === experimentName)
 			?.experiment_name ?? 'Select an Experiment'
 	);
+	let runVersion = $state("");
+	const uniqueRunVersion = $derived(
+		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunVersion ?? []
+	)
 	const triggerRunVersion = $derived(
-		uniqueRunVersion.find((version) => version.value === value)?.label ?? 'Select a Run Version'
+		uniqueRunVersion.find((version) => version.value === runVersion)?.label ?? 'Select a Run Version'
 	);
+	let runName = $state();
+	const uniqueRunName = $derived(
+		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunName ?? []
+	)
 	const triggerRunName = $derived(
-		uniqueRunName.find((name) => name.value === value)?.label ?? 'Select a Run Name'
+		uniqueRunName.find((name) => name.value === runName)?.label ?? 'Select a Run Name'
 	);
-	const triggerWell = $derived(fruits.find((f) => f.value === value)?.label ?? 'Select a Well');
+
+	let wellName = $state('');
+	const wellData = $derived(
+		experiments.find((f) => f.experiment_name === experimentName)?.wellData ?? []
+	)
+	const triggerWell = $derived(
+		wellData.find((well) => well.value === wellName)?.label ?? 'Select a Well'
+	);
+
+	
+
+	$inspect({experiments, triggerWell, wellData});
 </script>
 
 <Sidebar.Provider>
@@ -82,7 +79,7 @@
 
 		<div class="grid auto-rows-min gap-4 p-5 pt-0 md:grid-cols-4">
 			<div>
-				<Select.Root type="single" name="selected Experiment" bind:value>
+				<Select.Root type="single" name="selectedExperimentName" bind:value={experimentName}>
 					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
 						{triggerExperiment}
 					</Select.Trigger>
@@ -99,7 +96,7 @@
 				</Select.Root>
 			</div>
 			<div>
-				<Select.Root type="single" name="selectedRunVersion" bind:value>
+				<Select.Root type="single" name="selectedRunVersion" bind:value={runVersion}>
 					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
 						{triggerRunVersion}
 					</Select.Trigger>
@@ -116,7 +113,7 @@
 				</Select.Root>
 			</div>
 			<div>
-				<Select.Root type="single" name="selectedRunName" bind:value>
+				<Select.Root type="single" name="selectedRunName" bind:value={runName}>
 					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
 						{triggerRunName}
 					</Select.Trigger>
@@ -131,15 +128,15 @@
 				</Select.Root>
 			</div>
 			<div>
-				<Select.Root type="single" name="selectedWell" bind:value>
+				<Select.Root type="single" name="selectedWell" bind:value={wellName}>
 					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
 						{triggerWell}
 					</Select.Trigger>
 					<Select.Content>
 						<Select.Group>
 							<Select.GroupHeading>Well</Select.GroupHeading>
-							{#each fruits as fruit}
-								<Select.Item value={fruit.value} label={fruit.label}>{fruit.label}</Select.Item>
+							{#each wellData as well}
+								<Select.Item value={well.value} label={well.label}>{well.label}</Select.Item>
 							{/each}
 						</Select.Group>
 					</Select.Content>

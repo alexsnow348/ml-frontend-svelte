@@ -1,3 +1,5 @@
+import { wellData } from './well.js';
+
 export async function load({ fetch, params }) {
 	const experimentsRes = await fetch('/api/v1/dashboard/cellcounting/experiments');
 	const dashboardData = await experimentsRes.json();
@@ -10,20 +12,21 @@ export async function load({ fetch, params }) {
 		const uniqueDetailRes = await fetch(
 			`/api/v1/dashboard/cellcounting/unique_details/${uniqueExperimentUuid[i]}`
 		);
-		const experimentData = await uniqueDetailRes.json();
-		// console.log(experimentData.unique_details);
-		// add the data to the experiments_list
-		dashboardData.experiments_list[i].uniqueDetail = experimentData.unique_details;
+		const uniqueDetailsData = await uniqueDetailRes.json();
+		const uniqueRunName = [];
+		const uniqueRunVersion = [];
+		const runName = uniqueDetailsData.unique_details.run_name;
+		for (let i = 0; i < runName.length; i++) {
+			uniqueRunName.push({ value: runName[i], label: runName[i] });
+		}
 
-		// // get the data for the experiment
-		// const summaryDataRes = await fetch(
-		// 	`/api/v1/dashboard/cellcounting/summary/${uniqueExperimentUuid[i]}`
-		// );
-		// const summaryData = await summaryDataRes.json();
-		// // add the data to the experiments_list
-		// dashboardData.experiments_list[i].summaryData = summaryData;
+		const runVersion = uniqueDetailsData.unique_details.run_version;
+		for (let i = 0; i < runVersion.length; i++) {
+			uniqueRunVersion.push({ value: runVersion[i], label: runVersion[i] });
+		}
+		dashboardData.experiments_list[i].uniqueRunName = uniqueRunName;
+		dashboardData.experiments_list[i].uniqueRunVersion = uniqueRunVersion;
+		dashboardData.experiments_list[i].wellData = wellData;
 	}
-	// console.log(dashboardData.experiments_list[0].uniqueDetail);
-	// console.log(dashboardData.experiments_list[0].summaryData);
 	return { dashboardData };
 }
