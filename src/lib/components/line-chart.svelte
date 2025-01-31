@@ -47,7 +47,7 @@
     });
   </script>
   
-  <div class="w-full h-80">
+  <div class="w-full h-full">
     <canvas bind:this={chartCanvas}></canvas>
   </div>
   

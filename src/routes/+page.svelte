@@ -147,10 +147,11 @@
 		</div>
 		<!-- Summary -->
 		<div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-			<div class="grid auto-rows-min gap-4 md:grid-cols-3">
-				<div class="aspect-video rounded-xl bg-muted/50"></div>
-				<div class="aspect-video rounded-xl bg-muted/50"></div>
-				<div class="aspect-video rounded-xl bg-muted/50"></div>
+			<div class="grid auto-rows-min gap-4 md:grid-cols-4">
+				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
+				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
+				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
+				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
 			</div>
 			<!-- Graph -->
 			<div class="grid flex-1 flex-col gap-4 md:grid-cols-2">
