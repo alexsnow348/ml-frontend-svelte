@@ -1,4 +1,5 @@
 <script lang="ts">
+	
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
@@ -9,6 +10,10 @@
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
+
+  	import Chart from "$lib/components/line-chart.svelte";
+
+
 	let { data } = $props();	
 	const experiments = data.dashboardData.experiments_list;
 
@@ -39,10 +44,7 @@
 	const triggerWell = $derived(
 		wellData.find((well) => well.value === wellName)?.label ?? 'Select a Well'
 	);
-
-	
-
-	$inspect({experiments, triggerWell, wellData});
+	let imageSrc = "Sub A1 Well A15 2024_05_29__10_46_06_148.png";
 </script>
 
 <Sidebar.Provider>
@@ -80,7 +82,7 @@
 		<div class="grid auto-rows-min gap-4 p-5 pt-0 md:grid-cols-4">
 			<div>
 				<Select.Root type="single" name="selectedExperimentName" bind:value={experimentName}>
-					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
+					<Select.Trigger class="aspect-auto rounded-xl bg-muted/50">
 						{triggerExperiment}
 					</Select.Trigger>
 					<Select.Content>
@@ -97,7 +99,7 @@
 			</div>
 			<div>
 				<Select.Root type="single" name="selectedRunVersion" bind:value={runVersion}>
-					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
+					<Select.Trigger class="aspect-auto rounded-xl bg-muted/50">
 						{triggerRunVersion}
 					</Select.Trigger>
 					<Select.Content>
@@ -114,7 +116,7 @@
 			</div>
 			<div>
 				<Select.Root type="single" name="selectedRunName" bind:value={runName}>
-					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
+					<Select.Trigger class="aspect-auto rounded-xl bg-muted/50">
 						{triggerRunName}
 					</Select.Trigger>
 					<Select.Content>
@@ -151,7 +153,19 @@
 				<div class="aspect-video rounded-xl bg-muted/50"></div>
 			</div>
 			<!-- Graph -->
-			<div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min"></div>
+			<div class="grid flex-1 flex-col gap-4 md:grid-cols-2">
+				<!-- <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+					<Chart />
+				</div> -->
+				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
+					<img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-auto"/>
+				  </div>
+				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
+					<Chart />
+				</div>
+			</div>
+		
+			
 		</div>
 	</Sidebar.Inset>
 </Sidebar.Provider>
