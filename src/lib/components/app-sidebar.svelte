@@ -1,15 +1,8 @@
 <script lang="ts" module>
-	import AudioWaveform from "lucide-svelte/icons/audio-waveform";
-	import BookOpen from "lucide-svelte/icons/book-open";
-	import Bot from "lucide-svelte/icons/bot";
-	import ChartPie from "lucide-svelte/icons/chart-pie";
-	import Command from "lucide-svelte/icons/command";
-	import Frame from "lucide-svelte/icons/frame";
-	import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
-	
+
 	import ChartNoAxesCombined from 'lucide-svelte/icons/chart-no-axes-combined';
 
-	let logoPath = './logo.png';
+	let logoPath = './logo_arralyze.svg';
 	// This is sample data.
 	const data = {
 		teams: [
