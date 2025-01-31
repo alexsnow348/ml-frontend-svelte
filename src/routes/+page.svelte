@@ -158,8 +158,8 @@
 				<!-- <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
 					<Chart />
 				</div> -->
-				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
-					<img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-auto"/>
+				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min justify-center items-center">
+					<img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-full"/>
 				  </div>
 				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
 					<Chart />
