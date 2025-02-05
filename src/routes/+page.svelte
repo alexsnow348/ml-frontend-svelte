@@ -62,6 +62,31 @@
 	);
 	// sort the images with the url
 	images.sort((a, b) => a.url.localeCompare(b.url));
+
+	let datasets = [
+    { label: 'green', data: [65, 59, 80, 81, 56, 55, 40] },
+    { label: 'red', data: [45, 49, 60, 71, 46, 75, 50] },
+    { label: 'blue', data: [30, 39, 50, 41, 36, 25, 30] },
+	{ label: 'test', data: [10, 20, 30, 40, 50, 60, 70] },
+  ];
+
+  let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+  function updateData() {
+    datasets = datasets.map(ds => ({
+      ...ds,
+      data: ds.data.map(() => Math.floor(Math.random() * 100)),
+    }));
+  }
+
+  function addDataset() {
+    const newDataset = {
+      label: `Dataset ${datasets.length + 1}`,
+      data: Array.from({ length: labels.length }, () => Math.floor(Math.random() * 100)),
+    };
+    datasets = [...datasets, newDataset];
+
+
+}
 </script>
 
 <Sidebar.Provider>
@@ -180,7 +205,7 @@
 					 <ImageViewer {images}  />
 				  </div>
 				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
-					<Chart />
+					<Chart {datasets} {labels}  title="Cell Counting Over Time" />
 				</div>
 			</div>
 		

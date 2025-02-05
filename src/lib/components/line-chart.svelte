@@ -1,53 +1,111 @@
 <script>
-    import { onMount } from "svelte";
-    import Chart from "chart.js/auto";
-  
-    let chartCanvas;
-    
-    onMount(() => {
-      if (!chartCanvas) return;
-  
-      const ctx = chartCanvas.getContext("2d");
-  
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-          datasets: [
-            {
-              label: "Dataset 1",
-              data: [30, 50, 40, 60, 70, 90],
-              borderColor: "rgba(255, 99, 132, 1)",
-              backgroundColor: "rgba(255, 99, 132, 0.5)",
-              fill: true,
-              tension: 0.4,
+  import { onMount } from 'svelte';
+  import Chart from 'chart.js/auto';
+
+  const { datasets = [], labels = [], title = 'Multi-Source Line Chart' } = $props();
+  let canvas;
+  let chart;
+
+  const colors = [
+    'green',
+    'red',
+    'blue',
+    'rgb(255, 206, 86)',
+    'rgb(153, 102, 255)',
+    'rgb(255, 159, 64)',
+  ];
+
+  function createChart() {
+    if (chart) chart.destroy();
+
+    chart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: datasets.map((ds, index) => ({
+          label: ds.label,
+          data: ds.data,
+          borderColor: colors[index % colors.length],
+          backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
+          tension: 0.4,
+          pointRadius: 3,
+          fill: false,
+        })),
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              color: '#234f96',
+              font: { size: 14, weight: 'bold' },
             },
-            {
-              label: "Dataset 2",
-              data: [40, 60, 50, 80, 90, 110],
-              borderColor: "rgba(54, 162, 235, 1)",
-              backgroundColor: "rgba(54, 162, 235, 0.5)",
-              fill: true,
-              tension: 0.4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true },
           },
-          scales: {
-            x: { stacked: true },
-            y: { stacked: true },
+          title: {
+            display: true,
+            text: title,
+            align: 'center',
+            color: '#234f96',
+            font: { size: 18, weight: 'bold', },
+            padding: { top: 10, bottom: 20 },
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderWidth: 1,
+            borderColor: '#0077b6',
+            padding: 10,
           },
         },
-      });
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#555' },
+          },
+          y: {
+            grid: { color: 'rgba(200, 200, 200, 0.2)' },
+            ticks: { color: '#555' },
+          },
+        },
+      },
     });
-  </script>
-  
-  <div class="w-full h-full">
-    <canvas bind:this={chartCanvas}></canvas>
-  </div>
-  
+  }
+
+  onMount(createChart);
+
+  $effect(() => {
+    if (chart) {
+      chart.data.labels = labels;
+      chart.data.datasets = datasets.map((ds, index) => ({
+        label: ds.label,
+        data: ds.data,
+        borderColor: colors[index % colors.length],
+        backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
+        tension: 0.4,
+        pointRadius: 3,
+        fill: false,
+      }));
+      chart.update();
+    }
+  });
+</script>
+
+<style>
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    /* background: #f9f9f9; */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+  }
+</style>
+
+<div class="chart-container">
+  <canvas bind:this={canvas}></canvas>
+</div>

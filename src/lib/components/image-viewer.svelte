@@ -46,7 +46,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		max-width: 100%;
+		max-width: 95%;
 		margin: auto;
 	}
 	.main-image {
@@ -55,7 +55,6 @@
 		object-fit: contain;
 		border: 2px solid #ccc;
 		margin-bottom: 10px;
-		margin-top: 10px;
 	}
 	.thumbnails {
 		display: flex;
