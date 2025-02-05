@@ -28,5 +28,14 @@ export async function load({ fetch, params }) {
 		dashboardData.experiments_list[i].uniqueRunVersion = uniqueRunVersion;
 		dashboardData.experiments_list[i].wellData = wellData;
 	}
+	const responseImages = await fetch('/images/list');
+	const images = await responseImages.json();
+	const imagesFullPath = images.map((image) => {
+		return {
+			url: `http://localhost:3000/images/${image}`,
+
+		};
+	});
+	dashboardData.imagesFullPath = imagesFullPath;
 	return { dashboardData };
 }

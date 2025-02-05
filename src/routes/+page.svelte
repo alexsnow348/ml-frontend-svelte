@@ -1,5 +1,5 @@
 <script lang="ts">
-	
+	import { onMount } from 'svelte';
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
@@ -13,23 +13,25 @@
 
   	import Chart from "$lib/components/line-chart.svelte";
 
+	import ImageViewer from '$lib/components/image-viewer.svelte';
 
 	let { data } = $props();	
 	const experiments = data.dashboardData.experiments_list;
 
-	let experimentName = $state("");
+	let experimentName = $state(experiments[0].experiment_name);
 	const triggerExperiment = $derived(
 		experiments.find((experiment) => experiment.experiment_name === experimentName)
 			?.experiment_name ?? 'Select an Experiment'
 	);
-	let runVersion = $state("");
+	console.log(experiments[0].uniqueRunName[0].value);
+	let runVersion = $state(experiments[0].uniqueRunVersion[0].value);
 	const uniqueRunVersion = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunVersion ?? []
 	)
 	const triggerRunVersion = $derived(
 		uniqueRunVersion.find((version) => version.value === runVersion)?.label ?? 'Select a Run Version'
 	);
-	let runName = $state();
+	let runName = $state(experiments[0].uniqueRunName[0].value);
 	const uniqueRunName = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunName ?? []
 	)
@@ -37,14 +39,29 @@
 		uniqueRunName.find((name) => name.value === runName)?.label ?? 'Select a Run Name'
 	);
 
-	let wellName = $state('');
+	let wellName = $state(experiments[0].wellData[0].value);
 	const wellData = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.wellData ?? []
 	)
 	const triggerWell = $derived(
 		wellData.find((well) => well.value === wellName)?.label ?? 'Select a Well'
 	);
-	let imageSrc = "Sub A1 Well A15 2024_05_29__10_46_06_148.png";
+
+	const imagesFullPath = data.dashboardData.imagesFullPath;
+
+	// derive the images array with the  well name, run name and run version
+	
+	const images = $derived(
+		imagesFullPath.filter((image) => {
+			const split = image.url.split('/');
+			const version = split[4];
+			const run = split[5];
+			const well = split[7];
+			return well === wellName && run === runName && version === runVersion;
+		})
+	);
+	// sort the images with the url
+	images.sort((a, b) => a.url.localeCompare(b.url));
 </script>
 
 <Sidebar.Provider>
@@ -158,8 +175,9 @@
 				<!-- <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
 					<Chart />
 				</div> -->
-				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min justify-center items-center">
-					<img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-full"/>
+				<div class="aspect-auto flex rounded-xl bg-muted/50 md:min-h-min justify-center items-center">
+					<!-- <img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-full"/> -->
+					 <ImageViewer {images}  />
 				  </div>
 				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
 					<Chart />

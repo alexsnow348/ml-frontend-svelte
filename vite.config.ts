@@ -8,7 +8,11 @@ export default defineConfig({
 			'/api': {
 				target: 'http://localhost:5051/',
 				changeOrigin: true,
-			}
+			},
+			'/images': {	
+				target: 'http://localhost:3000/',
+				changeOrigin: true,
+			},
 		}
 	}
 
