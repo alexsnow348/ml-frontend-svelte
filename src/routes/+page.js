@@ -24,6 +24,8 @@ export async function load({ fetch, params }) {
 		for (let i = 0; i < runVersion.length; i++) {
 			uniqueRunVersion.push({ value: runVersion[i], label: runVersion[i] });
 		}
+		dashboardData.experiments_list[i].value = dashboardData.experiments_list[i].experiment_name;
+		dashboardData.experiments_list[i].label = dashboardData.experiments_list[i].experiment_name;
 		dashboardData.experiments_list[i].uniqueRunName = uniqueRunName;
 		dashboardData.experiments_list[i].uniqueRunVersion = uniqueRunVersion;
 		dashboardData.experiments_list[i].wellData = wellData;

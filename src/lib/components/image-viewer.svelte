@@ -1,4 +1,6 @@
-<script>
+<script lang="ts">
+	import { Label } from "$lib/components/ui/label/index.js";
+	import { Switch } from "$lib/components/ui/switch/index.js";
 	const { images = [] } = $props(); // Handling props with $props()
 
 	const state = $state({
@@ -10,25 +12,32 @@
 
 	// function prevImage() {
 	//   state.currentIndex = (state.currentIndex - 1 + images.length) % images.length;
-	// }
+	//  }
 
 	function selectImage(index) {
 		state.currentIndex = index;
 	}
+	let boundingBoxMode = $state(false);
+	$inspect({boundingBoxMode});
 </script>
 
-<div class="viewer">
+<div class="viewer p-6">
 	<img
 		class="main-image h-full w-full rounded-xl shadow-md"
 		src={images[state.currentIndex].url}
 		alt="Main Image"
 	/>
 
-	<!-- <div>
-      <button onclick={prevImage}>Previous</button>
-      <button onclick={nextImage}>Next</button>
+	<div>
+		<div class="flex items-left space-x-2  p-6">
+			<Switch id="airplane-mode"  bind:checked={boundingBoxMode}/>
+			<Label for="airplane-mode">Bounding Box Mode</Label>
+		</div>
+      <!-- <button onclick={prevImage}>Previous</button>
+      <button onclick={nextImage}>Next</button> -->
     </div>
-   -->
+  
+	
 	<div class="thumbnails">
 		{#each images as image, index}
 			<img
@@ -46,12 +55,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		max-width: 95%;
+		max-width: 90%;
 		margin: auto;
 	}
 	.main-image {
-		max-width: 95%;
-		max-height: 95%;
+		max-width: 90%;
+		max-height: 90%;
 		object-fit: contain;
 		border: 2px solid #ccc;
 		margin-bottom: 10px;

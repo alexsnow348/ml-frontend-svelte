@@ -11,11 +11,11 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 
-  	import Chart from "$lib/components/line-chart.svelte";
-
+	import Chart from '$lib/components/line-chart.svelte';
 	import ImageViewer from '$lib/components/image-viewer.svelte';
+	import SearchAndSelect from '$lib/components/search-and-select.svelte';
 
-	let { data } = $props();	
+	let { data } = $props();
 	const experiments = data.dashboardData.experiments_list;
 
 	let experimentName = $state(experiments[0].experiment_name);
@@ -27,30 +27,22 @@
 	let runVersion = $state(experiments[0].uniqueRunVersion[0].value);
 	const uniqueRunVersion = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunVersion ?? []
-	)
-	const triggerRunVersion = $derived(
-		uniqueRunVersion.find((version) => version.value === runVersion)?.label ?? 'Select a Run Version'
 	);
+
 	let runName = $state(experiments[0].uniqueRunName[0].value);
 	const uniqueRunName = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunName ?? []
-	)
-	const triggerRunName = $derived(
-		uniqueRunName.find((name) => name.value === runName)?.label ?? 'Select a Run Name'
 	);
 
 	let wellName = $state(experiments[0].wellData[0].value);
 	const wellData = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.wellData ?? []
-	)
-	const triggerWell = $derived(
-		wellData.find((well) => well.value === wellName)?.label ?? 'Select a Well'
 	);
 
 	const imagesFullPath = data.dashboardData.imagesFullPath;
 
 	// derive the images array with the  well name, run name and run version
-	
+
 	const images = $derived(
 		imagesFullPath.filter((image) => {
 			const split = image.url.split('/');
@@ -62,31 +54,15 @@
 	);
 	// sort the images with the url
 	images.sort((a, b) => a.url.localeCompare(b.url));
-
+	console.log(images[0].url);
 	let datasets = [
-    { label: 'green', data: [65, 59, 80, 81, 56, 55, 40] },
-    { label: 'red', data: [45, 49, 60, 71, 46, 75, 50] },
-    { label: 'blue', data: [30, 39, 50, 41, 36, 25, 30] },
-	{ label: 'test', data: [10, 20, 30, 40, 50, 60, 70] },
-  ];
+		{ label: 'green', data: [65, 59, 80, 81, 56, 55, 40] },
+		{ label: 'red', data: [45, 49, 60, 71, 46, 75, 50] },
+		{ label: 'blue', data: [30, 39, 50, 41, 36, 25, 30] },
+		{ label: 'test', data: [10, 20, 30, 40, 50, 60, 70] }
+	];
 
-  let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-  function updateData() {
-    datasets = datasets.map(ds => ({
-      ...ds,
-      data: ds.data.map(() => Math.floor(Math.random() * 100)),
-    }));
-  }
-
-  function addDataset() {
-    const newDataset = {
-      label: `Dataset ${datasets.length + 1}`,
-      data: Array.from({ length: labels.length }, () => Math.floor(Math.random() * 100)),
-    };
-    datasets = [...datasets, newDataset];
-
-
-}
+	let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
 </script>
 
 <Sidebar.Provider>
@@ -120,96 +96,47 @@
 			/>
 			<span class="sr-only">Toggle theme</span>
 		</Button>
+		<!-- Search and Select -->
 
-		<div class="grid auto-rows-min gap-4 p-5 pt-0 md:grid-cols-4">
+		<div class="grid auto-rows-min gap-4 p-3 md:grid-cols-1">
+			<SearchAndSelect data={experiments} bind:value={experimentName} />
+		</div>
+
+		<div class="grid auto-rows-min gap-4 p-3 pt-1 md:grid-cols-3">
 			<div>
-				<Select.Root type="single" name="selectedExperimentName" bind:value={experimentName}>
-					<Select.Trigger class="aspect-auto rounded-xl bg-muted/50">
-						{triggerExperiment}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Group>
-							<Select.GroupHeading>Experiment</Select.GroupHeading>
-							{#each experiments as experiment}
-								<Select.Item value={experiment.experiment_name} label={experiment.experiment_name}
-									>{experiment.experiment_name}</Select.Item
-								>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
+				<SearchAndSelect data={wellData} bind:value={wellName} />
 			</div>
 			<div>
-				<Select.Root type="single" name="selectedRunVersion" bind:value={runVersion}>
-					<Select.Trigger class="aspect-auto rounded-xl bg-muted/50">
-						{triggerRunVersion}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Group>
-							<Select.GroupHeading>Run Version</Select.GroupHeading>
-							{#each uniqueRunVersion as version}
-								<Select.Item value={version.value} label={version.label}
-									>{version.label}</Select.Item
-								>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
+				<SearchAndSelect data={uniqueRunVersion} bind:value={runVersion} />
 			</div>
 			<div>
-				<Select.Root type="single" name="selectedRunName" bind:value={runName}>
-					<Select.Trigger class="aspect-auto rounded-xl bg-muted/50">
-						{triggerRunName}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Group>
-							<Select.GroupHeading>Run Name</Select.GroupHeading>
-							{#each uniqueRunName as name}
-								<Select.Item value={name.value} label={name.label}>{name.label}</Select.Item>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
-			</div>
-			<div>
-				<Select.Root type="single" name="selectedWell" bind:value={wellName}>
-					<Select.Trigger class="aspect-video rounded-xl bg-muted/50">
-						{triggerWell}
-					</Select.Trigger>
-					<Select.Content>
-						<Select.Group>
-							<Select.GroupHeading>Well</Select.GroupHeading>
-							{#each wellData as well}
-								<Select.Item value={well.value} label={well.label}>{well.label}</Select.Item>
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
+				<SearchAndSelect data={uniqueRunName} bind:value={runName} />
 			</div>
 		</div>
 		<!-- Summary -->
 		<div class="flex flex-1 flex-col gap-4 p-4 pt-0">
 			<div class="grid auto-rows-min gap-4 md:grid-cols-4">
-				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
-				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
-				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
-				<div class="aspect-video rounded-xl bg-muted/50 w-full h-28"></div>
+				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
+				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
+				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
+				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
 			</div>
 			<!-- Graph -->
 			<div class="grid flex-1 flex-col gap-4 md:grid-cols-2">
 				<!-- <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
 					<Chart />
 				</div> -->
-				<div class="aspect-auto flex rounded-xl bg-muted/50 md:min-h-min justify-center items-center">
+				<div
+					class="flex aspect-square items-center justify-center rounded-xl bg-muted/50 sm:min-h-min md:min-h-min"
+				>
 					<!-- <img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-full"/> -->
-					 <ImageViewer {images}  />
-				  </div>
-				<div class="aspect-video flex rounded-xl bg-muted/50 md:min-h-min">
-					<Chart {datasets} {labels}  title="Cell Counting Over Time" />
+					<ImageViewer {images} />
+				</div>
+				<div class="aspect-video flex-col rounded-xl bg-muted/50 sm:min-h-min md:min-h-min">
+					<Chart {datasets} {labels} title="Cell Counting Over Time" />
+					<Chart {datasets} {labels} title="Cell Counting Over Time" />
 				</div>
 			</div>
-		
-			
 		</div>
 	</Sidebar.Inset>
 </Sidebar.Provider>
