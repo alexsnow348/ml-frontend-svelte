@@ -1,29 +1,29 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount } from 'svelte'
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import Sun from 'lucide-svelte/icons/sun';
 	import Moon from 'lucide-svelte/icons/moon';
-
+	
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
 
 	import Chart from '$lib/components/line-chart.svelte';
 	import ImageViewer from '$lib/components/image-viewer.svelte';
 	import SearchAndSelect from '$lib/components/search-and-select.svelte';
+	import { getCellCountSummary } from '$lib/services/get-cell-count.js';
 
 	let { data } = $props();
-	const experiments = data.dashboardData.experiments_list;
-
+	const experiments = data.data.dashboardData.experiments_list;
 	let experimentName = $state(experiments[0].experiment_name);
-	const triggerExperiment = $derived(
-		experiments.find((experiment) => experiment.experiment_name === experimentName)
-			?.experiment_name ?? 'Select an Experiment'
+	let transactionId = $derived(
+		experiments.find((f) => f.experiment_name === experimentName)?.transaction_id ?? []
 	);
-	console.log(experiments[0].uniqueRunName[0].value);
+
+
+
 	let runVersion = $state(experiments[0].uniqueRunVersion[0].value);
 	const uniqueRunVersion = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.uniqueRunVersion ?? []
@@ -39,8 +39,7 @@
 		experiments.find((f) => f.experiment_name === experimentName)?.wellData ?? []
 	);
 
-	const imagesFullPath = data.dashboardData.imagesFullPath;
-
+	const imagesFullPath = data.data.images;
 	// derive the images array with the  well name, run name and run version
 
 	const images = $derived(
@@ -52,17 +51,28 @@
 			return well === wellName && run === runName && version === runVersion;
 		})
 	);
+	let countSummary = {};
 	// sort the images with the url
 	images.sort((a, b) => a.url.localeCompare(b.url));
-	console.log(images[0].url);
+		
+	const fetchCount = async (transactionId: any, wellName: any) => {
+		countSummary = await getCellCountSummary(transactionId, wellName);
+	}
+	
+	onMount(() => {
+		fetchCount(transactionId, wellName);
+	})
+	
+	// initial data for the chart
 	let datasets = [
 		{ label: 'green', data: [65, 59, 80, 81, 56, 55, 40] },
 		{ label: 'red', data: [45, 49, 60, 71, 46, 75, 50] },
 		{ label: 'blue', data: [30, 39, 50, 41, 36, 25, 30] },
 		{ label: 'test', data: [10, 20, 30, 40, 50, 60, 70] }
 	];
+	let labels =['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+	$inspect(countSummary);
 
-	let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
 </script>
 
 <Sidebar.Provider>
@@ -97,11 +107,9 @@
 			<span class="sr-only">Toggle theme</span>
 		</Button>
 		<!-- Search and Select -->
-
 		<div class="grid auto-rows-min gap-4 p-3 md:grid-cols-1">
 			<SearchAndSelect data={experiments} bind:value={experimentName} />
 		</div>
-
 		<div class="grid auto-rows-min gap-4 p-3 pt-1 md:grid-cols-3">
 			<div>
 				<SearchAndSelect data={wellData} bind:value={wellName} />
@@ -121,21 +129,25 @@
 				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
 				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
 			</div>
-			<!-- Graph -->
 			<div class="grid flex-1 flex-col gap-4 md:grid-cols-2">
-				<!-- <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-					<Chart />
-				</div> -->
 				<div
 					class="flex aspect-square items-center justify-center rounded-xl bg-muted/50 sm:min-h-min md:min-h-min"
 				>
-					<!-- <img src={imageSrc} alt="Local Image" class="shadow-md rounded-xl max-w-full h-full"/> -->
 					<ImageViewer {images} />
 				</div>
+				<!-- Graph -->
+				
 				<div class="aspect-video flex-col rounded-xl bg-muted/50 sm:min-h-min md:min-h-min">
+					
+					
 					<Chart {datasets} {labels} title="Cell Counting Over Time" />
-					<Chart {datasets} {labels} title="Cell Counting Over Time" />
+					<!-- <button class="w-full h-12 bg-secondary rounded-xl">Download Data</button>
+					<button class="w-full h-12 bg-secondary rounded-xl">Download Data</button>
+					 -->
 				</div>
+		
+			
+				
 			</div>
 		</div>
 	</Sidebar.Inset>

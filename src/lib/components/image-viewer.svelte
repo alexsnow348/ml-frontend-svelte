@@ -18,7 +18,6 @@
 		state.currentIndex = index;
 	}
 	let boundingBoxMode = $state(false);
-	$inspect({boundingBoxMode});
 </script>
 
 <div class="viewer p-6">
