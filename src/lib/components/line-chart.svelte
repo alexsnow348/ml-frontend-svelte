@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import annotationPlugin from 'chartjs-plugin-annotation';
 	import { getCellCountSummary } from '$lib/services/get-cell-count.js';
 	let { transactionId, wellName, title = 'Multi-Source Line Chart' } = $props();
+	Chart.register(annotationPlugin);
+
 	let canvas = $state();
 	let chart;
-	Chart.register(annotationPlugin);
 	let datasets = [];
 	let labels = [];
 
@@ -207,10 +209,15 @@
 </script>
 
 {#await countSummary}
-	<div>Loading...</div>
+	<span class="text-primary">Loading...</span>
+	<LoaderCircle class="w-8 h-8 text-primary animate-spin" />
 {:then}
 	<div class="chart-container">
 		<canvas bind:this={canvas}></canvas>
+	</div>
+{:catch error}
+	<div class="chart-container">
+		<p>{error.message}</p>
 	</div>
 {/await}
 

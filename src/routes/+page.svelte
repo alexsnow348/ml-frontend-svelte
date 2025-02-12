@@ -4,16 +4,15 @@
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import Sun from 'lucide-svelte/icons/sun';
-	import Moon from 'lucide-svelte/icons/moon';
+	// import Sun from 'lucide-svelte/icons/sun';
+	// import Moon from 'lucide-svelte/icons/moon';
 	
-	import { toggleMode } from 'mode-watcher';
-	import { Button } from '$lib/components/ui/button/index.js';
+	// import { toggleMode } from 'mode-watcher';
+	// import { Button } from '$lib/components/ui/button/index.js';
 
 	import Chart from '$lib/components/line-chart.svelte';
 	import ImageViewer from '$lib/components/image-viewer.svelte';
 	import SearchAndSelect from '$lib/components/search-and-select.svelte';
-	import { getCellCountSummary } from '$lib/services/get-cell-count.js';
 
 	let { data } = $props();
 	const experiments = data.data.dashboardData.experiments_list;
@@ -41,7 +40,6 @@
 
 	const imagesFullPath = data.data.images;
 	// derive the images array with the  well name, run name and run version
-
 	const images = $derived(
 		imagesFullPath.filter((image) => {
 			const split = image.url.split('/');
@@ -49,11 +47,8 @@
 			const run = split[5];
 			const well = split[7];
 			return well === wellName && run === runName && version === runVersion;
-		})
+		}).sort((a, b) => a.url.localeCompare(b.url))
 	);
-	let countSummary = {};
-	// sort the images with the url
-	images.sort((a, b) => a.url.localeCompare(b.url));
 
 </script>
 
