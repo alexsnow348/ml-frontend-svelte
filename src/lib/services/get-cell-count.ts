@@ -8,7 +8,7 @@ export const getCellCountSummary = async (transactionId: string, wellName: strin
 		} else if (response?.status > 399) {
 			throw { status: response.status, message: res }
 		} else {
-			return res
+			return res.results
 		}
 	} catch (e) {
 		// console.log(`/lib/utils/server.ts getBigcommerceApi(${HTTP_ENDPOINT + '/api/' + endpoint})`, e)

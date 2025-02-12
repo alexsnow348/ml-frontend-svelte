@@ -54,24 +54,6 @@
 	let countSummary = {};
 	// sort the images with the url
 	images.sort((a, b) => a.url.localeCompare(b.url));
-		
-	const fetchCount = async (transactionId: any, wellName: any) => {
-		countSummary = await getCellCountSummary(transactionId, wellName);
-	}
-	
-	onMount(() => {
-		fetchCount(transactionId, wellName);
-	})
-	
-	// initial data for the chart
-	let datasets = [
-		{ label: 'green', data: [65, 59, 80, 81, 56, 55, 40] },
-		{ label: 'red', data: [45, 49, 60, 71, 46, 75, 50] },
-		{ label: 'blue', data: [30, 39, 50, 41, 36, 25, 30] },
-		{ label: 'test', data: [10, 20, 30, 40, 50, 60, 70] }
-	];
-	let labels =['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-	$inspect(countSummary);
 
 </script>
 
@@ -140,7 +122,7 @@
 				<div class="aspect-video flex-col rounded-xl bg-muted/50 sm:min-h-min md:min-h-min">
 					
 					
-					<Chart {datasets} {labels} title="Cell Counting Over Time" />
+					<Chart  {transactionId} {wellName} title="Cell Counting Over Time" />
 					<!-- <button class="w-full h-12 bg-secondary rounded-xl">Download Data</button>
 					<button class="w-full h-12 bg-secondary rounded-xl">Download Data</button>
 					 -->

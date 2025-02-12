@@ -1,10 +1,13 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
-
-	const { datasets = [], labels = [], title = 'Multi-Source Line Chart' } = $props();
-	let canvas;
+	import { getCellCountSummary } from '$lib/services/get-cell-count.js';
+	let { transactionId, wellName, title = 'Multi-Source Line Chart' } = $props();
+	let canvas = $state();
 	let chart;
+
+	let datasets = [];
+	let labels = [];
 
 	const colors = [
 		'green',
@@ -14,10 +17,10 @@
 		'rgb(153, 102, 255)',
 		'rgb(255, 159, 64)'
 	];
+	let countSummary = $state({});
 
 	function createChart() {
 		if (chart) chart.destroy();
-
 		chart = new Chart(canvas, {
 			type: 'line',
 			data: {
@@ -102,29 +105,59 @@
 			}
 		});
 	}
+	const fetchCount = async (transactionId: any, wellName: any) => {
+		if (!transactionId || !wellName) return;
+		try {
+			countSummary = await getCellCountSummary(transactionId, wellName);
+			// loop through the countSummary and create datasets and labels
+			datasets = countSummary.count_summary.map((summary: any) => ({
+				label: summary.label,
+				data: summary.data.map((d: any) => d)
+			}));
+			labels = countSummary.duration_str;
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-	onMount(createChart);
+	onMount(async () => {
+		await fetchCount(transactionId, wellName);
+		createChart();
+	});
 
 	$effect(() => {
-		if (chart) {
-			chart.data.labels = labels;
-			chart.data.datasets = datasets.map((ds, index) => ({
-				label: ds.label,
-				data: ds.data,
-				borderColor: colors[index % colors.length],
-				backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
-				tension: 0.4,
-				pointRadius: 3,
-				fill: false
-			}));
-			chart.update();
-		}
+		(async () => {
+			if (chart) {
+				await fetchCount(transactionId, wellName);
+				chart.data.datasets = datasets.map((ds, index) => ({
+					label: ds.label,
+					data: ds.data,
+					borderColor: colors[index % colors.length],
+					backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
+					tension: 0.4,
+					pointRadius: 3,
+					fill: false
+				}));
+				chart.update();
+			}
+		})();
 	});
+	$inspect(countSummary);
 </script>
 
-<div class="chart-container">
-	<canvas bind:this={canvas}></canvas>
-</div>
+<!-- {#if countSummary}
+	<div class="chart-container">
+		<canvas bind:this={canvas}></canvas>
+	</div>
+{/if} -->
+
+{#await countSummary}
+	<div>Loading...</div>
+{:then countSummary}
+	<div class="chart-container">
+		<canvas bind:this={canvas}></canvas>
+	</div>
+{/await}
 
 <style>
 	.chart-container {
