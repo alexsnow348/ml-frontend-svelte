@@ -79,7 +79,7 @@
 				</Breadcrumb.Root>
 			</div>
 		</header>
-		<Button onclick={toggleMode} variant="outline" size="icon" class="absolute right-2 top-2">
+		<!-- <Button onclick={toggleMode} variant="outline" size="icon" class="absolute right-2 top-2">
 			<Sun
 				class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 "
 			/>
@@ -87,11 +87,17 @@
 				class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
 			/>
 			<span class="sr-only">Toggle theme</span>
-		</Button>
+		</Button> -->
 		<!-- Search and Select -->
-		<div class="grid auto-rows-min gap-4 p-3 md:grid-cols-1">
-			<SearchAndSelect data={experiments} bind:value={experimentName} />
+		<div class="grid auto-rows-min gap-4 p-3 md:grid-cols-2">
+			<div>
+				<SearchAndSelect data={experiments} bind:value={experimentName} />
+			</div>
+			<div>
+				<SearchAndSelect data={experiments} bind:value={experimentName} />
+			</div>
 		</div>
+		
 		<div class="grid auto-rows-min gap-4 p-3 pt-1 md:grid-cols-3">
 			<div>
 				<SearchAndSelect data={wellData} bind:value={wellName} />
@@ -103,14 +109,15 @@
 				<SearchAndSelect data={uniqueRunName} bind:value={runName} />
 			</div>
 		</div>
+	
 		<!-- Summary -->
 		<div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-			<div class="grid auto-rows-min gap-4 md:grid-cols-4">
+			<!-- <div class="grid auto-rows-min gap-4 md:grid-cols-1">
 				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
 				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
 				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
 				<div class="aspect-video h-28 w-full rounded-xl bg-muted/50"></div>
-			</div>
+			</div> -->
 			<div class="grid flex-1 flex-col gap-4 md:grid-cols-2">
 				<div
 					class="flex aspect-square items-center justify-center rounded-xl bg-muted/50 sm:min-h-min md:min-h-min"

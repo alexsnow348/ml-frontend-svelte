@@ -1,37 +1,85 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
+	import annotationPlugin from 'chartjs-plugin-annotation';
 	import { getCellCountSummary } from '$lib/services/get-cell-count.js';
 	let { transactionId, wellName, title = 'Multi-Source Line Chart' } = $props();
 	let canvas = $state();
 	let chart;
-
+	Chart.register(annotationPlugin);
 	let datasets = [];
 	let labels = [];
 
-	const colors = [
-		'green',
-		'red',
-		'blue',
-		'rgb(255, 206, 86)',
-		'rgb(153, 102, 255)',
-		'rgb(255, 159, 64)'
+	const colors = ['red', 'green', 'blue', 'gray'];
+	// random light colors
+	const randomColor = [
+		'rgba(255, 99, 132)',
+		'rgba(54, 162, 235)',
+		'rgba(255, 206, 86)',
+		'rgba(75, 192, 192)',
+		'rgba(153, 102, 255)',
+		'rgba(255, 159, 64)'
 	];
 	let countSummary = $state({});
+
+	function generateAnnotations(labels) {
+		let annotations = {};
+		const sixHoursInSeconds = 6 * 60 * 60;
+		labels.forEach((label, index) => {
+			const seconds = labels[index];
+			if (seconds % sixHoursInSeconds < 200 && index > 0) {
+				console.log(seconds % sixHoursInSeconds);
+				let lineId = Math.floor(seconds / sixHoursInSeconds);
+				// crete line id
+				annotations[`line_${lineId}`] = {
+					type: 'line',
+					xMin: index,
+					xMax: index,
+					borderColor: '#234f96',
+					borderWidth: 2
+				};
+			}
+		});
+		console.log(annotations);
+		return annotations;
+	}
+
+	function selectColor(label: string, index: number) {
+		// check 100 included in label value to set the color
+		const labelSplit = label.split('_');
+		if (labelSplit.length < 3) {
+			if (labelSplit.length === 1) return colors[3];
+			return randomColor[index % randomColor.length];
+		}
+
+		if (labelSplit[2] === '100') return colors[0];
+		if (labelSplit[2] === '010') return colors[1];
+		if (labelSplit[2] === '001') return colors[2];
+	}
+
+	function secondToString(seconds: number[]) {
+		return seconds.map((sec) => {
+			const days = Math.floor(sec / (24 * 60 * 60));
+			const hours = Math.floor((sec % (24 * 60 * 60)) / (60 * 60));
+			const minutes = Math.floor((sec % (60 * 60)) / 60);
+			if (days === 0) return `${hours}h:${minutes}m`;
+			return `${days}d:${hours}h:${minutes}m`;
+		});
+	}
 
 	function createChart() {
 		if (chart) chart.destroy();
 		chart = new Chart(canvas, {
 			type: 'line',
 			data: {
-				labels,
+				labels: secondToString(labels),
 				datasets: datasets.map((ds, index) => ({
 					label: ds.label,
 					data: ds.data,
-					borderColor: colors[index % colors.length],
-					backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
+					borderColor: selectColor(ds.label, index),
+					backgroundColor: selectColor(ds.label, index).replace('1)', '0.2)'),
 					tension: 0.4,
-					pointRadius: 3,
+					pointRadius: 0,
 					fill: false
 				}))
 			},
@@ -66,14 +114,19 @@
 						borderWidth: 1,
 						borderColor: '#0077b6',
 						padding: 10
+					},
+
+					annotation: {
+						annotations: generateAnnotations(labels)
 					}
 				},
 				scales: {
 					x: {
-						grid: { display: false },
-						ticks: { color: '#555' },
-						display: true,
-						// offset: true,
+						grid: { color: 'rgba(200, 200, 200, 0.2)' },
+						ticks: {
+							color: '#555',
+							stepSize: 4 // 6 hours interval 15 minutes
+						},
 						title: {
 							display: true,
 							text: 'Duration',
@@ -88,7 +141,7 @@
 					},
 					y: {
 						grid: { color: 'rgba(200, 200, 200, 0.2)' },
-						ticks: { color: '#555', stepSize: 15 },
+						ticks: { color: '#555', stepSize: 5 },
 						title: {
 							display: true,
 							text: 'Count',
@@ -114,7 +167,8 @@
 				label: summary.label,
 				data: summary.data.map((d: any) => d)
 			}));
-			labels = countSummary.duration_str;
+			labels = countSummary.duration.map((d: any) => d);
+			return countSummary;
 		} catch (error) {
 			console.log(error);
 		}
@@ -125,35 +179,36 @@
 		createChart();
 	});
 
+	// call the fetchCount function if the transactionId or wellName changes
 	$effect(() => {
-		(async () => {
-			if (chart) {
-				await fetchCount(transactionId, wellName);
-				chart.data.datasets = datasets.map((ds, index) => ({
-					label: ds.label,
-					data: ds.data,
-					borderColor: colors[index % colors.length],
-					backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
-					tension: 0.4,
-					pointRadius: 3,
-					fill: false
-				}));
-				chart.update();
-			}
-		})();
+		// make sure the datasets and labels are updated before updating the chart
+		fetchCount(transactionId, wellName)
+			.then(() => {
+				// Data fetched successfully
+				if (chart) {
+					chart.data.labels = secondToString(labels);
+					chart.data.datasets = datasets.map((ds, index) => ({
+						label: ds.label,
+						data: ds.data,
+						borderColor: selectColor(ds.label, index),
+						backgroundColor: selectColor(ds.label, index).replace('1)', '0.2)'),
+						tension: 0.4,
+						pointRadius: 0,
+						fill: false
+					}));
+					chart.update();
+				}
+			})
+			.catch(() => {
+				// Fetching data
+			});
 	});
-	$inspect(countSummary);
+	$inspect(countSummary, transactionId, wellName);
 </script>
-
-<!-- {#if countSummary}
-	<div class="chart-container">
-		<canvas bind:this={canvas}></canvas>
-	</div>
-{/if} -->
 
 {#await countSummary}
 	<div>Loading...</div>
-{:then countSummary}
+{:then}
 	<div class="chart-container">
 		<canvas bind:this={canvas}></canvas>
 	</div>
