@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { setContext } from 'svelte'
 	import AppSidebar from '$lib/components/app-sidebar.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import { currentImageIndex } from '$lib/context.js';
+
 	// import Sun from 'lucide-svelte/icons/sun';
 	// import Moon from 'lucide-svelte/icons/moon';
 	
@@ -20,8 +22,6 @@
 	let transactionId = $derived(
 		experiments.find((f) => f.experiment_name === experimentName)?.transaction_id ?? []
 	);
-
-
 
 	let runVersion = $state(experiments[0].uniqueRunVersion[0].value);
 	const uniqueRunVersion = $derived(
@@ -50,6 +50,7 @@
 		}).sort((a, b) => a.url.localeCompare(b.url))
 	);
 
+	setContext('currentImageIndex', currentImageIndex);
 </script>
 
 <Sidebar.Provider>
@@ -84,10 +85,7 @@
 			<span class="sr-only">Toggle theme</span>
 		</Button> -->
 		<!-- Search and Select -->
-		<div class="grid auto-rows-min gap-4 p-3 md:grid-cols-2">
-			<div>
-				<SearchAndSelect data={experiments} bind:value={experimentName} />
-			</div>
+		<div class="grid auto-rows-min gap-4 p-3 md:grid-cols-1">
 			<div>
 				<SearchAndSelect data={experiments} bind:value={experimentName} />
 			</div>
@@ -117,7 +115,7 @@
 				<div
 					class="flex aspect-square items-center justify-center rounded-xl bg-muted/50 sm:min-h-min md:min-h-min"
 				>
-					<ImageViewer {images} />
+					<ImageViewer {images}  />
 				</div>
 				<!-- Graph -->
 				

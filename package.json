@@ -67,6 +67,8 @@
 	"dependencies": {
 		"chart.js": "^4.4.7",
 		"chartjs-plugin-annotation": "^3.1.0",
-		"mode-watcher": "^0.5.1"
+		"mode-watcher": "^0.5.1",
+		"svelte-multiselect": "^11.0.0-rc.1",
+		"svelte-select": "^5.8.3"
 	}
 }

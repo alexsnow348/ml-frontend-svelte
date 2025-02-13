@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { hasContext, getContext} from 'svelte';
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
@@ -13,6 +14,7 @@
 	let labels = [];
 
 	const colors = ['red', 'green', 'blue', 'gray'];
+	
 	// random light colors
 	const randomColor = [
 		'rgba(255, 99, 132)',
@@ -23,11 +25,19 @@
 		'rgba(255, 159, 64)'
 	];
 	let countSummary = $state({});
-
-	function generateAnnotations(labels) {
+	const currentImageIndex = getContext('currentImageIndex');
+	currentImageIndex.subscribe((value) => {
+		if (chart) {
+			chart.options.plugins.annotation.annotations = generateAnnotations(labels, value);
+			chart.update();
+		}
+		console.log(value);
+	});
+	
+	function generateAnnotations(labels, currentImageIndex) {
 		let annotations = {};
 		const sixHoursInSeconds = 6 * 60 * 60;
-		labels.forEach((label, index) => {
+		labels.forEach((label, index) => {		
 			const seconds = labels[index];
 			if (seconds % sixHoursInSeconds < 200 && index > 0) {
 				console.log(seconds % sixHoursInSeconds);
@@ -38,6 +48,17 @@
 					xMin: index,
 					xMax: index,
 					borderColor: '#234f96',
+					borderWidth: 2
+				};
+			}
+			if (index === currentImageIndex) {
+				let lineId = "image";
+				// crete line id
+				annotations[`line_${lineId}`] = {
+					type: 'line',
+					xMin: index,
+					xMax: index,
+					borderColor: 'gray',
 					borderWidth: 2
 				};
 			}
@@ -119,7 +140,7 @@
 					},
 
 					annotation: {
-						annotations: generateAnnotations(labels)
+						annotations: generateAnnotations(labels, 0)
 					}
 				},
 				scales: {
@@ -179,6 +200,7 @@
 	onMount(async () => {
 		await fetchCount(transactionId, wellName);
 		createChart();
+		
 	});
 
 	// call the fetchCount function if the transactionId or wellName changes
@@ -205,7 +227,7 @@
 				// Fetching data
 			});
 	});
-	$inspect(countSummary, transactionId, wellName);
+
 </script>
 
 {#await countSummary}

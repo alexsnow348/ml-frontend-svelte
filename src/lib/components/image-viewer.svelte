@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getContext, setContext } from "svelte";
 	import { Label } from "$lib/components/ui/label/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
 	const { images = [] } = $props(); // Handling props with $props()
@@ -14,10 +15,18 @@
 	//   state.currentIndex = (state.currentIndex - 1 + images.length) % images.length;
 	//  }
 
+	const currentImageIndex = getContext("currentImageIndex");
+	
 	function selectImage(index) {
 		state.currentIndex = index;
+		currentImageIndex.set(state.currentIndex);
+	
 	}
+	
 	let boundingBoxMode = $state(false);
+	
+	
+	
 </script>
 
 <div class="viewer p-6">
